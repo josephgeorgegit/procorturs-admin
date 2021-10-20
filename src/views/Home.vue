@@ -2,33 +2,36 @@
   <div class="home">
     <h1>Admin Dashboard: Exams</h1>
     <div>
-      <div> 
-        <button @click="debug()">Debug</button>
-      </div> 
-      <div>
+      <button @click="route('SubjectAdmin')">Go to Subject Page</button>
+      <div class ="addExam">
         <button @click="addExam = !addExam">Add New Exam</button>
-        <input v-if="addExam" type="text" v-model="examToAdd">
+        <select v-if="addExam" v-model="selectedSubject">
+            <option v-for="data in subjects.data" :key="data">
+              {{data.id}}
+            </option>
+        </select>
         <input v-if="addExam" type="datetime-local" v-model="dateToAdd">
-        <button v-if="addExam" @click="addNewExam(examToAdd, )">Add New Exam</button>
-      </div> 
+        <button v-if="addExam" @click="addNewExam()">Add New Exam</button>
+      </div>
+
       <div class="exam" v-for="exam in exams.data" :key="exam.id">
         <h3>{{exam.subject}}</h3>
-        
+        <button @click="saveChanges(exam.id)">Post to Firebase</button>
         <div>
           <h4>{{exam.date_time}}</h4>
-          <button @click="editTime = !editTime">Change</button>
-          <button v-if="editTime" @click="changeDateTime">save</button>
+          <button @click="editTimeClick(exam.id)">Change Time</button>
+          <input type="datetime-local" v-if="editTime == exam.id" v-model="newDateTime">
+          <button v-if="editTime == exam.id" @click="changeDateTime(exam.id)">Save New Time</button>
         </div>
         
         <p v-for="student in exam.students" :key="student">
           {{student}}
           <button @click="deleteStudent(student, exam.id)">delete</button>
         </p>
-        <button @click="addStudent = !addStudent">Add Student</button>
-        <input v-if="addStudent" type="text" v-model="studentToAdd">
-        <button v-if="addStudent" @click="addStudentToExam(exam.id)">add</button>
-        <input type="datetime-local" v-if="editTime" v-model="newDateTime">
-        <button @click="saveChanges(exam.id)">save</button>
+        <button @click="addStudentClick(exam.id)">Add Student</button>
+        <input v-if="addStudent == exam.id" type="text" v-model="studentToAdd">
+        <button v-if="addStudent == exam.id" @click="addStudentToExam(exam.id)">add</button>
+        
       </div>
     </div>
   </div>
@@ -45,13 +48,15 @@ export default {
     return{
       exams: {},
       subjects: {},
-      examToAdd: '',
-      studentToAdd: '',
-      dateToAdd: '',
+      //Add Exams
+      selectedSubject: '',
+      dateToAdd: '',  
       addExam: false,
-      addSubject: false,
-      addStudent: false,
-      editTime: false,
+      //Add Students to Exams
+      addStudent: '',
+      studentToAdd: '',
+      //Edit exam dates
+      editTime: '',
       newDateTime: ''
     }
   },
@@ -65,13 +70,24 @@ export default {
     //   return date.toDate()
     // },
     debug(){
-      console.log(this.subjects.data[0].id)
+      console.log(this.subjects.data)
     },
-    addNewExam(exam_id, time){
-      console.log(exam_id);
-      console.log(time)
-      this.dateToAdd = '';
-      this.examToAdd = ''
+    route(path){
+      this.$router.push(path)
+    },
+    addNewExam(){
+      if(this.selectedSubject == '' || this.dateToAdd == ''){
+        return
+      }
+      let date = moment(this.dateToAdd).format()
+      let exam = {
+        students: [],
+        subject: this.selectedSubject,
+        date_time: date
+      }
+      console.log(exam)
+      //console.log(this.subjects[0])
+      this.exams.data.push(exam)
     },
     deleteStudent(student_id, exam_id){
       for(let i=0; i<this.exams.data.length; i++){
@@ -80,6 +96,21 @@ export default {
           console.log(exam_to_edit)
           exam_to_edit.students = exam_to_edit.students.filter(student => student != student_id)
         }
+      }
+    },
+    addStudentClick(exam_id){
+      if(this.addStudent == exam_id){
+        this.addStudent = ''
+      }else{
+        this.addStudent = exam_id
+      }
+    },
+
+    editTimeClick(exam_id){
+      if(this.editTime == exam_id){
+        this.editTime = ''
+      }else{
+        this.editTime= exam_id
       }
     },
     addStudentToExam(exam_id){
@@ -119,5 +150,15 @@ export default {
   background-color: #fafafa;
   border: 2px solid black;
   padding: 30px;
+}
+.addExam{
+  border-radius: 15px;
+  background-color: #fafafa;
+  border: 2px solid black;
+  padding: 10px;
+  width: 40%;
+}
+.home{
+
 }
 </style>

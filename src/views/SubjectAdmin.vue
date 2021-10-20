@@ -2,10 +2,8 @@
   <div class="subjectadmin">
     <h1>Admin Dashboard: Subjects</h1>
     <div>
-      <div> 
-        <button @click="debug()">Debug</button>
-      </div>
-      <div>
+      <button @click="route('/')">Go to Exam Page</button>
+      <div class="addSubject">
         <button @click="addSubject = !addSubject">Add New Subject</button>
         <input v-if="addSubject" type="text" v-model="subjectToAdd">
         <button v-if="addSubject" @click="addNewSubject(subjectToAdd)">Add New Subject</button>
@@ -13,15 +11,15 @@
       <div class="subject" v-for="subject in subjects.data" :key="subject.id">
         <h3>{{subject.id}}</h3>
         <button @click="saveChanges(subject.id)">Save</button>
-        <button @click="removeSubject(subject.id)">delete</button>
+        <button @click="removeSubject(subject.id)">Remove Subject</button>
         <div>
-          <p v-for="student in subject.students" :key="student">
+          <p v-for="student in subject.students" :key="student" class="student">
             {{student}}
-            <button @click="deleteStudent(student, subject.id)">delete</button>
+            <button @click="deleteStudent(student, subject.id)">Delete</button>
           </p>
-          <button @click="addStudent = !addStudent">Add Student</button>
-          <input v-if="addStudent" type="text" v-model="studentToAdd">
-          <button v-if="addStudent" @click="addStudentToSubject(subject.id)">add</button>
+          <button @click="addStudentClick(subject.id)">Add Student</button>
+          <input v-if="addStudent == subject.id" type="text" v-model="studentToAdd">
+          <button v-if="addStudent == subject.id" @click="addStudentToSubject(subject.id)">add</button>
           
         </div>
         
@@ -42,7 +40,7 @@ export default {
       subjects: {},
       addSubject: false,
       subjectToAdd: '',
-      addStudent: false,
+      addStudent: '',
       studentToAdd: ''
     }
   },
@@ -56,17 +54,27 @@ export default {
     debug(){
       console.log(this.subjects.data[0])
     },
-
+    route(path){
+      this.$router.push(path)
+    },
     addNewSubject(subject_id){
       let subject_to_add = {
         students: [],
         id: subject_id
       }
       this.subjects.data.push(subject_to_add)
-          },
+    },
 
     removeSubject(subject_id){
       this.subjects.data = this.subjects.data.filter(x => x.id != subject_id)
+    },
+
+    addStudentClick(exam_id){
+      if(this.addStudent == exam_id){
+        this.addStudent = ''
+      }else{
+        this.addStudent = exam_id
+      }
     },
 
     deleteStudent(student_id, subject_id){
@@ -107,6 +115,18 @@ export default {
   border-radius: 15px;
   background-color: #fafafa;
   border: 2px solid black;
-  padding: 20px;
+  padding: 30px;
+}
+.addSubject{
+  border-radius: 15px;
+  background-color: #fafafa;
+  border: 2px solid black;
+  padding: 10px;
+  width: 40%;
+}
+.student{
+}
+.subjectadmin{
+  
 }
 </style>
