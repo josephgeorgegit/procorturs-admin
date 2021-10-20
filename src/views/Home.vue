@@ -79,11 +79,13 @@ export default {
       if(this.selectedSubject == '' || this.dateToAdd == ''){
         return
       }
-      let date = moment(this.dateToAdd).format()
+      let date = moment(this.dateToAdd).format('LLL')
+      let randomString = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
       let exam = {
         students: [],
         subject: this.selectedSubject,
-        date_time: date
+        date_time: date,
+        id: randomString
       }
       console.log(exam)
       //console.log(this.subjects[0])
@@ -126,7 +128,7 @@ export default {
       for(let i=0; i<this.exams.data.length; i++){
         if(this.exams.data[i].id == exam_id){
           console.log(this.exams.data[i].date_time)
-          this.exams.data[i].date_time = moment(this.newDateTime).format()
+          this.exams.data[i].date_time = moment(this.newDateTime).format('LLL')
           console.log(this.exams.data[i].date_time)
         }
       }
