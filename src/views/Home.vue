@@ -2,6 +2,15 @@
   <div class="home">
     <h1>Admin Dashboard: Exams</h1>
     <div>
+      <div> 
+        <button @click="debug()">Debug</button>
+      </div> 
+      <div>
+        <button @click="addExam = !addExam">Add New Exam</button>
+        <input v-if="addExam" type="text" v-model="examToAdd">
+        <input v-if="addExam" type="datetime-local" v-model="dateToAdd">
+        <button v-if="addExam" @click="addNewExam(examToAdd, )">Add New Exam</button>
+      </div> 
       <div class="exam" v-for="exam in exams.data" :key="exam.id">
         <h3>{{exam.subject}}</h3>
         
@@ -35,7 +44,12 @@ export default {
   data(){
     return{
       exams: {},
+      subjects: {},
+      examToAdd: '',
       studentToAdd: '',
+      dateToAdd: '',
+      addExam: false,
+      addSubject: false,
       addStudent: false,
       editTime: false,
       newDateTime: ''
@@ -43,12 +57,22 @@ export default {
   },
   async mounted(){
     this.exams = await axios.get('http://localhost:5000/admin/exams')
+    this.subjects = await axios.get('http://localhost:5000/admin/subjects')
     console.log(this.exams)
   },
   methods: {
     // dateFormat(date){
     //   return date.toDate()
     // },
+    debug(){
+      console.log(this.subjects.data[0].id)
+    },
+    addNewExam(exam_id, time){
+      console.log(exam_id);
+      console.log(time)
+      this.dateToAdd = '';
+      this.examToAdd = ''
+    },
     deleteStudent(student_id, exam_id){
       for(let i=0; i<this.exams.data.length; i++){
         if(this.exams.data[i].id == exam_id){
