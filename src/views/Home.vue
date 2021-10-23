@@ -16,7 +16,7 @@
 
       <div class="exam" v-for="exam in exams.data" :key="exam.id">
         <h3>{{exam.subject}}</h3>
-        <button @click="saveChanges(exam.id)">Post to Firebase</button>
+        <button @click="saveChanges(exam.id)">Save Changes</button>
         <div>
           <h4>{{exam.date_time}}</h4>
           <button @click="editTimeClick(exam.id)">Change Time</button>
@@ -137,6 +137,7 @@ export default {
     async saveChanges(exam_id){
       for(let i=0; i<this.exams.data.length; i++){
         if(this.exams.data[i].id == exam_id){
+          console.log(this.exams.data[i])
           axios.post('http://localhost:5000/admin/exams/save', this.exams.data[i])
         }
       }
